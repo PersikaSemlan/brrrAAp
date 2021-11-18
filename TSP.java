@@ -49,6 +49,14 @@ public class TSP {
     
     //Applies the Nearest Neighbour heuristic - find all closest unvisited neighbours
     public static ArrayList<Node> nearestNeighbour(int[][] adjMatrix, Node[] nodes) {
+        /*
+            https://iq.opengenus.org/approximation-algorithm-for-travelling-salesman-problem/
+            1. Let 0 be the starting and ending point for salesman.
+            2. Construct Minimum Spanning Tree from with 0 as root using Prim’s Algorithm.
+            3. List vertices visited in preorder walk/Depth First Search of the constructed MST and add source node at the end.
+
+
+        */
         Node current = nodes[0];
         ArrayList<Node> tour = new ArrayList<Node>();
         tour.add(current);
