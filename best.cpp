@@ -19,6 +19,13 @@ void printMatrix(vector<vector<int>> matrix){
         }
 }
 
+vector<vector<int>> primMST(){
+
+    
+}
+
+
+
 //Create initial adjacency matrix
 //If self set distance to "infinity"
 vector<vector<int>> getAdjMatrix(vector<vector<double>> coordinates, int noVertices){
@@ -26,7 +33,7 @@ vector<vector<int>> getAdjMatrix(vector<vector<double>> coordinates, int noVerti
     for (int i = 0; i < noVertices; i++) {
         for (int j = 0; j <= i; j++) {
             if(i == j) {
-                adjMatrix[i][j] = 100000000;
+                adjMatrix[i][j] = INT32_MAX;
             } else {
                 adjMatrix[i][j] = round(sqrt(pow(coordinates[i][0] - coordinates[j][0], 2)+ pow(coordinates[i][1] - coordinates[j][1], 2)));
                 adjMatrix[j][i] = adjMatrix[i][j];
