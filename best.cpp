@@ -24,7 +24,35 @@ void printMatrix(vector<vector<int>> matrix){
 // jämnt antal shows i parents 
 // eller existerar inte i parents
 
-//DFS
+//Gets the neighbours from the parent vector
+vector<vector<int>> neighbours(vector<int> parents, int noVertices){
+      vector<vector<int>> neighbours(noVertices, vector<int>(1));
+
+    for(int i = 1; i < noVertices; i++){
+        int index = parents[i]; //9
+        neighbours[index].push_back(i); 
+        neighbours[i].push_back(index);
+    }
+    return neighbours;
+}
+
+
+//DFS   
+//Remember to fadil :)
+/*vector<int> DFS(vector<int> parents, int noVertices){
+    vector<int> visitedVertices;
+    vector<bool> isVisited(noVertices, false);
+
+    while(visitedVertices.size() < noVertices){
+
+
+       // isVisited[vertex] = true;
+    }
+
+}*/
+
+//trim
+
 
 
 
@@ -105,8 +133,10 @@ int main(){
         cout << parents[j] << endl;
     }
     
+    //vector<int> dfsResult = DFS(parents, noVertices);
 
-
+    vector<vector<int>> bajs = neighbours(parents, noVertices);
+    printMatrix(bajs);
 
 
     return 0; 
