@@ -21,8 +21,7 @@ void printMatrix(vector<vector<int>> matrix){
 
 
 //Christofides ?
-// jämnt antal shows i parents 
-// eller existerar inte i parents
+// jämnt antal shows i parents eller existerar inte i parents
 
 //Gets the neighbours from the parent vector
 vector<vector<int>> neighbours(vector<int> parents, int noVertices){
@@ -51,9 +50,7 @@ vector<vector<int>> neighbours(vector<int> parents, int noVertices){
 
 }*/
 
-//trim
-
-
+//Trimmer
 
 
 //Uses Prim's algorithm to calculate the minimum spanning tree (MST)
