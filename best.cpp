@@ -161,6 +161,7 @@ int main(){
     vector<vector<int>> neighbourList = neighbours(parents, noVertices);
 
     DFS(neighbourList, noVertices);
+    twoOpt(adjMatrix, noVertices);
 
     for (int j = 0; j < path.size(); j++){
         cout << path[j] << endl;
