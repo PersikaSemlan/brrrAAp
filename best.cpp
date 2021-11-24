@@ -9,6 +9,7 @@
  
 using namespace std;
 
+vector<int> path;
 //Just for printing methods (felsökning typ)
 void printMatrix(vector<vector<int>> matrix){
     for (int i = 0; i < matrix.size(); i++){
@@ -35,23 +36,26 @@ vector<vector<int>> neighbours(vector<int> parents, int noVertices){
     return neighbours;
 }
 
+//Sets current node as visited and traverses the MST until all vertices are visited.
+vector<bool> recursDFS(vector<vector<int>> neighbours, vector<bool> isVisited, int currentVertex){
+    isVisited[currentVertex] = true;
+    path.push_back(currentVertex);
 
-//DFS   
-//Remember to fadil :)
-/*vector<int> DFS(vector<int> parents, int noVertices){
-    vector<int> visitedVertices;
-    vector<bool> isVisited(noVertices, false);
-
-    while(visitedVertices.size() < noVertices){
-
-
-       // isVisited[vertex] = true;
+    for(int v = 1; v < neighbours[currentVertex].size(); v++){
+        if(!isVisited[neighbours[currentVertex][v]]){
+            isVisited = recursDFS(neighbours, isVisited, neighbours[currentVertex][v]);
+        }
     }
+    return isVisited;
+}
 
-}*/
-
-//Trimmer
-
+//Setup for recursive DFS
+void DFS(vector<vector<int>> neighbours, int noVertices){
+    vector<bool> isVisited(noVertices, false);
+    int currentVertex = 0;
+    isVisited = recursDFS(neighbours, isVisited, currentVertex);
+    path.push_back(0);
+}
 
 //Uses Prim's algorithm to calculate the minimum spanning tree (MST)
 vector<int> primMST( vector<vector<double>> coordinates, vector<vector<int>> adjMatrix, int noVertices){ 
@@ -122,19 +126,17 @@ int main(){
 
     //printMatrix(coordinates);
     vector<vector<int>> adjMatrix = getAdjMatrix(coordinates, noVertices);
-    printMatrix(adjMatrix);
+    //printMatrix(adjMatrix);
 
     vector<int> parents = primMST(coordinates, adjMatrix, noVertices);
 
-    for (int j = 0; j < parents.size(); j++){
-        cout << parents[j] << endl;
+    vector<vector<int>> neighbourList = neighbours(parents, noVertices);
+
+    DFS(neighbourList, noVertices);
+
+    for (int j = 0; j < path.size(); j++){
+        cout << path[j] << endl;
     }
-    
-    //vector<int> dfsResult = DFS(parents, noVertices);
-
-    vector<vector<int>> bajs = neighbours(parents, noVertices);
-    printMatrix(bajs);
-
 
     return 0; 
 }
