@@ -95,6 +95,34 @@ vector<int> primMST( vector<vector<double>> coordinates, vector<vector<int>> adj
     return parents;
 }
 
+void twoOpt(vector<vector<int>> adjMatrix, int noVertices) {
+    
+    //För varje kant, testa byt ut mot kanter du får (Du får bara byta 2 kanter om kanterna ej delar någon nod)
+    //Kolla för varje bytt kant, om kostnaden blir mindre
+    //Om ett byte ger lägre kostnad, fortsätt på samma sätt från den "nya" grafen.
+    //Sluta om ingen ny graf är strikt billigare
+
+    int currentWeight1, currentWeight2, newWeight1, newWeight2;
+
+    
+    for(int i = 0; i < noVertices - 2; i++) 
+         for(int j = i + 2; j < noVertices; j++) {
+            //Weight on edges we try to swap
+            currentWeight1 =  adjMatrix[path[i]][path[i+1]];
+            currentWeight2 = adjMatrix[path[j]][path[j+1]];
+
+            //Weight on new edges
+            newWeight1 = adjMatrix[path[i]][path[j]];
+            newWeight2 = adjMatrix[path[i+1]][path[j+1]];
+
+            if(newWeight1 + newWeight2 < currentWeight1 + currentWeight2) {
+                reverse(path.begin() + (i+1), path.begin() + j);
+                i = 0;
+                j = i + 2;
+            } 
+        }
+     
+}
 
 //Create initial adjacency matrix           
 // Optimize: change from 2D matrix to list to avoid double counting, potentially doubles
