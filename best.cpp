@@ -104,7 +104,7 @@ void twoOpt(vector<vector<int>> adjMatrix, int N) {
  
     int currentWeight1, currentWeight2, newWeight1, newWeight2, mini, minj;
     int iterations = 0;
-    int maxIterations = 100;
+    int maxIterations = 1000;
     int minChange;
     do {
         minChange = 0;
