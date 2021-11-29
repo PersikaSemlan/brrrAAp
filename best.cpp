@@ -116,11 +116,11 @@ void twoOpt(vector<vector<int>> adjMatrix, int N) {
 
                 //Weight on edges we try to swap
                 newWeight1 =  adjMatrix[path[i]][path[i+1]];
-                newWeight2 = adjMatrix[path[j]][path[(j+1)%9]];
+                newWeight2 = adjMatrix[path[j]][path[(j+1)%(N-1)]];
  
                 //Weight on new edges
                 currentWeight1 = adjMatrix[path[i]][path[j]];
-                currentWeight2 = adjMatrix[path[i+1]][path[(j+1)%9]];
+                currentWeight2 = adjMatrix[path[i+1]][path[(j+1)%(N-1)]];
                 
                 int change = currentWeight1 + currentWeight2 - newWeight1 - newWeight2;
                 
