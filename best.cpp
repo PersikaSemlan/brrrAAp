@@ -54,7 +54,7 @@ void DFS(vector<vector<int>> neighbours, int noVertices){
     vector<bool> isVisited(noVertices, false);
     int currentVertex = 0;
     isVisited = recursDFS(neighbours, isVisited, currentVertex);
-    path.push_back(0);
+    //path.push_back(0);
 }
 
 //Uses Prim's algorithm to calculate the minimum spanning tree (MST)
@@ -95,33 +95,45 @@ vector<int> primMST( vector<vector<double>> coordinates, vector<vector<int>> adj
     return parents;
 }
 
-void twoOpt(vector<vector<int>> adjMatrix, int noVertices) {
-    
+void twoOpt(vector<vector<int>> adjMatrix, int N) {
+ 
     //För varje kant, testa byt ut mot kanter du får (Du får bara byta 2 kanter om kanterna ej delar någon nod)
     //Kolla för varje bytt kant, om kostnaden blir mindre
     //Om ett byte ger lägre kostnad, fortsätt på samma sätt från den "nya" grafen.
     //Sluta om ingen ny graf är strikt billigare
+ 
+    int currentWeight1, currentWeight2, newWeight1, newWeight2, mini, minj;
+    int iterations = 0;
+    int maxIterations = 100;
+    int minChange;
+    do {
+        minChange = 0;
+        for(int i = 0; i < N - 2; i++) 
+            for(int j = i + 2; j < N; j++) {
 
-    int currentWeight1, currentWeight2, newWeight1, newWeight2;
+                //cout << i << 'i' << endl;
+               // cout << j << 'j' << endl;
 
-    
-    for(int i = 0; i < noVertices - 2; i++) 
-         for(int j = i + 2; j < noVertices; j++) {
-            //Weight on edges we try to swap
-            currentWeight1 =  adjMatrix[path[i]][path[i+1]];
-            currentWeight2 = adjMatrix[path[j]][path[j+1]];
-
-            //Weight on new edges
-            newWeight1 = adjMatrix[path[i]][path[j]];
-            newWeight2 = adjMatrix[path[i+1]][path[j+1]];
-
-            if(newWeight1 + newWeight2 < currentWeight1 + currentWeight2) {
-                reverse(path.begin() + (i+1), path.begin() + j);
-                i = 0;
-                j = i + 2;
-            } 
-        }
-     
+                //Weight on edges we try to swap
+                newWeight1 =  adjMatrix[path[i]][path[i+1]];
+                newWeight2 = adjMatrix[path[j]][path[(j+1)%(N-1)]];
+ 
+                //Weight on new edges
+                currentWeight1 = adjMatrix[path[i]][path[j]];
+                currentWeight2 = adjMatrix[path[i+1]][path[(j+1)%(N-1)]];
+                
+                int change = currentWeight1 + currentWeight2 - newWeight1 - newWeight2;
+                
+                if(minChange > change) {
+                    //cout << minChange << " " << change << endl;
+                    minChange = change;
+                    mini = i;
+                    minj = j;
+                } 
+            }
+        reverse(path.begin() + (mini+1), path.begin() + (minj + 1));
+        iterations++;
+    } while(iterations < maxIterations && minChange < 0);
 }
 
 //Create initial adjacency matrix           
@@ -161,7 +173,7 @@ int main(){
     vector<vector<int>> neighbourList = neighbours(parents, noVertices);
 
     DFS(neighbourList, noVertices);
-    twoOpt(adjMatrix, noVertices);
+    twoOpt(adjMatrix, path.size());
 
     for (int j = 0; j < path.size(); j++){
         cout << path[j] << endl;
