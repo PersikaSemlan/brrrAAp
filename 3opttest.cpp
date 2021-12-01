@@ -6,10 +6,15 @@
 #include <random>
 #include <stack>
 #include <algorithm>
+#include <chrono>
  
 using namespace std;
+using namespace std::chrono;
 
 vector<int> path;
+high_resolution_clock::time_point start;
+
+
 //Just for printing methods (felsökning typ)
 void printMatrix(vector<vector<int>> matrix){
     for (int i = 0; i < matrix.size(); i++){
@@ -95,16 +100,28 @@ vector<int> primMST( vector<vector<double>> coordinates, vector<vector<int>> adj
     return parents;
 }
 
+bool timeout() {
+    auto stop = high_resolution_clock::now(); 
+    auto duration = duration_cast<microseconds>(stop - start); 
+    
+    if(duration.count() > 1980000){
+        return true;
+    }
+    return false;
+}
+
+void makeSwap(int start, int stop) {
+    std::reverse(std::begin(path)+start, std::begin(path)+stop+1);
+}
 
 void threeOpt(vector<vector<int>> adjMatrix, int N) {
     int node1, node2, node3, node4, node5, node6;
     double newTour[5];
-    int maxIterations = 1;
-    int iterations = 0;
-    do{
-        for(int i = 1; i < N-2; i++) 
+        for(int i = 0; i < N-3; i++) 
 			for(int j = N - 2; j>i+2; j--)  
                 for(int k = j+2; k < N + (i > 0); k++) {
+                    if(timeout())
+                        return;
                     node1 = path[i-1];
                     node2 = path[i];
                     node3 = path[j-1];
@@ -122,12 +139,11 @@ void threeOpt(vector<vector<int>> adjMatrix, int N) {
                     int tmp = i;
 
                     if(newTour[0] > newTour[1])
-                        reverse(path.begin() + (i+1), path.begin() + (j));
+                        //reverse(path.begin() + (i), path.begin() + (j)); 
+                        makeSwap(i, j-1);
                     else if(newTour[0] > newTour[2])
-                        reverse(path.begin() + (j+1), path.begin() + (k));
-                    else if(newTour[0] > newTour[4])
-                        reverse(path.begin() + (i+1), path.begin() + (k));
-                    
+                        //reverse(path.begin() + (j), path.begin() + (k));
+                        makeSwap(j, k-1);
                     else if(newTour[0] > newTour[3]) {
                         swap = path;
                         for(int l = j; l < k; l++) {
@@ -140,16 +156,10 @@ void threeOpt(vector<vector<int>> adjMatrix, int N) {
                         }
                           
                     }
+                    else if(newTour[0] > newTour[4])
+                        makeSwap(i, k-1);
                     
                 }  
-
-
-        iterations++;
-    }while(iterations < maxIterations);
-
-
-
-
 }
 
 
@@ -222,6 +232,7 @@ vector<vector<int>> getAdjMatrix(vector<vector<double>> coordinates, int noVerti
 
 
 int main(){
+    start = high_resolution_clock::now();
     int noVertices;
     cin >> noVertices; 
     
@@ -240,7 +251,7 @@ int main(){
     vector<vector<int>> neighbourList = neighbours(parents, noVertices);
 
     DFS(neighbourList, noVertices);
-    //twoOpt(adjMatrix, path.size());
+    twoOpt(adjMatrix, path.size());
     threeOpt(adjMatrix, path.size());
 
     for (int j = 0; j < path.size(); j++){
