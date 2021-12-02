@@ -11,23 +11,8 @@
 using namespace std;
 using namespace std::chrono;
 
-vector<int> path;
+vector<int> path; //Global variable for final TSP path
 high_resolution_clock::time_point start;
-
-
-//Just for printing methods (felsökning typ)
-void printMatrix(vector<vector<int>> matrix){
-    for (int i = 0; i < matrix.size(); i++){
-            for (int j = 0; j < matrix[i].size(); j++){
-                cout << matrix[i][j] << ' ';
-            }
-            cout << endl;
-        }
-}
-
-
-//Christofides ?
-// jämnt antal shows i parents eller existerar inte i parents
 
 //Gets the neighbours from the parent vector
 vector<vector<int>> neighbours(vector<int> parents, int noVertices){
@@ -100,6 +85,7 @@ vector<int> primMST( vector<vector<double>> coordinates, vector<vector<int>> adj
     return parents;
 }
 
+//Timeout function, ensures we do not go over time
 bool timeout() {
     auto stop = high_resolution_clock::now(); 
     auto duration = duration_cast<microseconds>(stop - start); 
@@ -113,8 +99,9 @@ bool timeout() {
 void threeOpt(vector<vector<int>> adjMatrix, int N) {
     int node1, node2, node3, node4, node5, node6;
     double newTour[5];
+    while(true) {
         for(int i = 1; i < N-2; i++) 
-            for(int j = N - 2; j>i+2; j--)  
+            for(int j = i + 2; j<N-2; j++)  
                 for(int k = j+2; k < N + (i > 0); k++) {
                     if(timeout())
                         return;
@@ -123,8 +110,7 @@ void threeOpt(vector<vector<int>> adjMatrix, int N) {
                     node3 = path[j-1];
                     node4 = path[j];
                     node5 = path[k-1];
-                    node6 = path[k % (path.size() - 1)];
-
+                    node6 = path[k % N];
                     newTour[0] = adjMatrix[node1][node2] + adjMatrix[node3][node4] + adjMatrix[node5][node6];
                     newTour[1] = adjMatrix[node1][node3] + adjMatrix[node2][node4] + adjMatrix[node5][node6];
                     newTour[2] = adjMatrix[node1][node2] + adjMatrix[node3][node5] + adjMatrix[node4][node6];
@@ -134,38 +120,45 @@ void threeOpt(vector<vector<int>> adjMatrix, int N) {
                     vector<int> swap;
                     int tmp = i;
 
-                    if(newTour[0] > newTour[1])
-                        reverse(path.begin() + (i), path.begin() + (j));
-                    else if(newTour[0] > newTour[2])
-                        reverse(path.begin() + (j), path.begin() + (k));
-                    else if(newTour[0] > newTour[4])
-                        reverse(path.begin() + (i), path.begin() + (k));
-                    
-                    else if(newTour[0] > newTour[3]) {
-                        swap = path;
-                        for(int l = j; l < k; l++) {
-                            path[tmp++] = swap[l];
+                    int minDist = 0;
+                    int minTourCost = newTour[0];
 
+                    //Find the new lowest weight path
+                    for(int l = 1; l < 5; l++)
+                        if(newTour[l] <= minTourCost) {
+                            minTourCost = newTour[l];
+                            minDist = l;
                         }
 
-                        for(int l = i; l < j; l++) {
-                            path[tmp++] = swap[l];
-                        }
-                          
-                    }
-                    
-                }  
+                    switch (minDist)
+                    {
+                        case 0:
+                            break;
+                        case 1: 
+                            reverse(path.begin() + (i), path.begin() + (j));
+                            break;
+                        case 2:
+                            reverse(path.begin() + (j), path.begin() + (k));
+                            break;
+                        case 3:
+                            swap = path;
+                            for(int l = j; l < k; l++) 
+                                path[tmp++] = swap[l];
+                            for(int l = i; l < j; l++) 
+                                path[tmp++] = swap[l];
+                            break;
+                        case 4:
+                            reverse(path.begin() + (i), path.begin() + (k));
+                            break;
+
+                    }               
+                }
+        if(timeout())
+            return;
+
+    }
+        
 }
-
-
-
-
-
-
-
-
-
-
 
 void twoOpt(vector<vector<int>> adjMatrix, int N) {
  
@@ -182,9 +175,6 @@ void twoOpt(vector<vector<int>> adjMatrix, int N) {
         minChange = 0;
         for(int i = 0; i < N - 2; i++) 
             for(int j = i + 2; j < N; j++) {
-
-                //cout << i << 'i' << endl;
-               // cout << j << 'j' << endl;
 
                 //Weight on edges we try to swap
                 newWeight1 =  adjMatrix[path[i]][path[i+1]];
@@ -227,22 +217,26 @@ vector<vector<int>> getAdjMatrix(vector<vector<double>> coordinates, int noVerti
 
 
 int main(){
+
+    //Startar timer
     start = high_resolution_clock::now();
+    
+    //Read Input
     int noVertices;
     cin >> noVertices; 
-    
     vector<vector<double>> coordinates(noVertices, vector<double>(2));
     for(int i = 0; i < noVertices; i++) {
         cin >> coordinates[i][0];
         cin >> coordinates[i][1];
     }
 
-    //printMatrix(coordinates);
+    //Calculates distance between every vertex
     vector<vector<int>> adjMatrix = getAdjMatrix(coordinates, noVertices);
-    //printMatrix(adjMatrix);
-
+    
+    //Builds MSP for greedy algorithm
     vector<int> parents = primMST(coordinates, adjMatrix, noVertices);
 
+    //List of who's neighbour with who
     vector<vector<int>> neighbourList = neighbours(parents, noVertices);
 
     DFS(neighbourList, noVertices);
