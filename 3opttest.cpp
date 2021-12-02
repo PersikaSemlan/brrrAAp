@@ -110,15 +110,11 @@ bool timeout() {
     return false;
 }
 
-void makeSwap(int start, int stop) {
-    std::reverse(std::begin(path)+start, std::begin(path)+stop+1);
-}
-
 void threeOpt(vector<vector<int>> adjMatrix, int N) {
     int node1, node2, node3, node4, node5, node6;
     double newTour[5];
-        for(int i = 0; i < N-3; i++) 
-			for(int j = N - 2; j>i+2; j--)  
+        for(int i = 1; i < N-2; i++) 
+            for(int j = N - 2; j>i+2; j--)  
                 for(int k = j+2; k < N + (i > 0); k++) {
                     if(timeout())
                         return;
@@ -139,11 +135,12 @@ void threeOpt(vector<vector<int>> adjMatrix, int N) {
                     int tmp = i;
 
                     if(newTour[0] > newTour[1])
-                        //reverse(path.begin() + (i), path.begin() + (j)); 
-                        makeSwap(i, j-1);
+                        reverse(path.begin() + (i), path.begin() + (j));
                     else if(newTour[0] > newTour[2])
-                        //reverse(path.begin() + (j), path.begin() + (k));
-                        makeSwap(j, k-1);
+                        reverse(path.begin() + (j), path.begin() + (k));
+                    else if(newTour[0] > newTour[4])
+                        reverse(path.begin() + (i), path.begin() + (k));
+                    
                     else if(newTour[0] > newTour[3]) {
                         swap = path;
                         for(int l = j; l < k; l++) {
@@ -156,8 +153,6 @@ void threeOpt(vector<vector<int>> adjMatrix, int N) {
                         }
                           
                     }
-                    else if(newTour[0] > newTour[4])
-                        makeSwap(i, k-1);
                     
                 }  
 }
